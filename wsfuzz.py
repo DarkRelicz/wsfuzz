@@ -10,9 +10,11 @@ def args():
     return parser.parse_args()
 
 
-
-def xss(target, payload):
+def xss(target, payload, exampleRequest):
     print('xss')
+
+def lfi(target, payload, exampleRequest):
+    print('lfi')
 
 def sqli(target, payload):
     print('sqli')
