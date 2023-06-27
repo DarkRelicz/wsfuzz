@@ -1,12 +1,12 @@
 from argparse import ArgumentParser
+import wsHandler as w
 
 def args():
     parser = ArgumentParser()
-
     parser.add_argument('-t', '--target', nargs='?', type=str, required=True, help='Target Websocket URL')
-    parser.add_argument('-a', '--attack', choices=['xss', 'sqli', 'cmdi'], required=True, help='Type of attack to carry out')
-    parser.add_argument('-p', '--payload', nargs='?', type=str, required=True, help='Payload file to use')
-
+    parser.add_argument('-a', '--attack', choices=['xss', 'sqli', 'cmdi, lfi'], required=True, help='Type of attack to carry out')
+    parser.add_argument('-r', '--request', nargs='?', type=str, required=True, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}")
+    parser.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use')
     return parser.parse_args()
 
 
@@ -16,35 +16,48 @@ def xss(target, payload, exampleRequest):
 def lfi(target, payload, exampleRequest):
     print('lfi')
 
-def sqli(target, payload):
+def sqli(target, payload, exampleRequest):
     print('sqli')
 
-def cmdi(target, payload):
+def cmdi(target, payload, exampleRequest):
     print('cmd injection')
 
-
-# ws helper function
-def ws_handler(url, payload):
-    return True
 
 
 def main():
     arg = args()
 
-    print(arg.target)
-    print(arg.payload)
+    if arg.target[0:5] != "ws://":
+        print("Please enter a valid websocket url")
+        exit(0)
+
     if arg.attack == 'xss':
-        if arg.payload :
+        if arg.payload:
             payload = arg.payload
         else:
-            payload = "/var/xss"
-        xss(payload)
+            payload = "dir_to_default_xss_payload"
+        xss(arg.target, payload, arg.request)
+
     if arg.attack == 'lfi':
-        payload = "/var/lfi"
-        lfi(payload)
+        if arg.payload:
+            payload = arg.payload
+        else:
+            payload = "dir_to_default_lfi_payload"
+        lfi(arg.target, payload, arg.request)
+
+    if arg.attack == 'sqli':
+        if arg.payload:
+            payload = arg.payload
+        else:
+            payload = "dir_to_default_sqli_payload"
+        sqli(arg.target, payload, arg.request)
+
     if arg.attack == 'cmdi':
-        payload = "/var/cmdi"
-        cmdi(payload)
+        if arg.payload:
+            payload = arg.payload
+        else:
+            payload = "dir_to_default_cmi_payload"
+        cmdi(arg.target, payload, arg.request)
 
 
 
