@@ -34,7 +34,17 @@ def main():
     print(arg.target)
     print(arg.payload)
     if arg.attack == 'xss':
-        xss()
+        if arg.payload :
+            payload = arg.payload
+        else:
+            payload = "/var/xss"
+        xss(payload)
+    if arg.attack == 'lfi':
+        payload = "/var/lfi"
+        lfi(payload)
+    if arg.attack == 'cmdi':
+        payload = "/var/cmdi"
+        cmdi(payload)
 
 
 
