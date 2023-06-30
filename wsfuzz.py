@@ -13,42 +13,30 @@ RESET = Fore.RESET
 
 def args():
     parser = ArgumentParser()
-    
-    # Uncomment this
-    # parser.add_argument('-t', '--target', nargs='?', type=str, required=True, help='Target Websocket URL')
-    # parser.add_argument('-a', '--attack', choices=['xss', 'sqli', 'cmdi, 'lfi'], required=True, help='Type of attack to carry out')
-    # parser.add_argument('-r', '--request', nargs='?', type=str, required=True, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}")
-    # parser.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use')
-    
-    # Testing Purpose (sqli)
-    parser.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/authenticate-user-blind')
-    parser.add_argument('-a', '--attack', choices=['xss', 'sqli', 'cmdi' , 'lfi'], help='Type of attack to carry out', default='sqli')
-    parser.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default='{"auth_user":"*","auth_pass":""}')
-    parser.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/sqli.txt')
+
+    subparser = parser.add_subparsers(title='Attack', dest='attack', help='Type of attack to carry out', required=True)
+    xss = subparser.add_parser('xss')
+    sqli = subparser.add_parser('sqli')
+    cmdi = subparser.add_parser('cmdi')
+    lfi = subparser.add_parser('lfi')
+
+    xss.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/reflected-xss')
+    xss.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="{'*'}")
+    xss.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/xss.txt')
+
+    sqli.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/authenticate-user-blind')
+    sqli.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default='{"auth_user":"*","auth_pass":""}')
+    sqli.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/sqli.txt')
+
+    cmdi.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/command-execution')
+    cmdi.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="{'*'}")
+    cmdi.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/cmdi.txt')
+
+    lfi.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/file-inclusion')
+    lfi.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="{'*'}")
+    lfi.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/lfi.txt')
+
     return parser.parse_args()
-
-    # # Testing Purpose (xss)
-    # parser.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/reflected-xss')
-    # parser.add_argument('-a', '--attack', choices=['xss', 'sqli', 'cmdi', 'lfi'], help='Type of attack to carry out', default='xss')
-    # parser.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="{'*'}")
-    # parser.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/xss.txt')
-    # return parser.parse_args()
-
-    # # Testing Purpose (cli)
-    # parser.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/command-execution')
-    # parser.add_argument('-a', '--attack', choices=['xss', 'sqli', 'cmdi', 'lfi'], help='Type of attack to carry out', default='cmdi')
-    # parser.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="{'*'}")
-    # parser.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/cmdi.txt')
-    # return parser.parse_args()
-
-    # Testing Purpose (lfi)
-    # parser.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/file-inclusion')
-    # parser.add_argument('-a', '--attack', choices=['xss', 'sqli', 'cmdi, lfi'], help='Type of attack to carry out', default='lfi')
-    # parser.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="{'*'}")
-    # parser.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/lfi.txt')
-    # return parser.parse_args()
-
-
 
 
 
