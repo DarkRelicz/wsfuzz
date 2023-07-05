@@ -62,7 +62,6 @@ def b64(payload):
     msg = b64_str.decode('utf-8')
     return msg
 
-#w
 
 
 # conduct cross site scripting attack
