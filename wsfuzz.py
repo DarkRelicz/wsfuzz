@@ -68,13 +68,13 @@ def b64(payload):
 def xss(target, payload, exampleRequest, encode):
     print(f"{GREEN}[+]{RESET} xss selected! Commencing XSS attack...")
     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
-    with open (payload, 'r') as payload_file:
+    with open(payload, 'r') as payload_file:
         payloads = payload_file.readlines()
     for line in payloads:
         line = line.replace('\n', '')
         newRequest = exampleRequest.replace('*', line)
         response = w.InteractWithWsSite(target, newRequest)
-        print(response)
+        print("response: %s\n" % response)
     
 
 
@@ -116,8 +116,8 @@ def cmdi(target, payload, exampleRequest, encode):
     for line in payloads:
         line = line.replace('\n', '')
         newRequest = exampleRequest.replace('*', line)
-        w.InteractWithWsSite(target, newRequest)
-    print('cmd injection')
+        response = w.InteractWithWsSite(target, newRequest)
+        print("response: %s\n" % response)
 
 
 
