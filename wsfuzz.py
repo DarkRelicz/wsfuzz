@@ -23,7 +23,7 @@ def args():
     lfi = subparser.add_parser('lfi')
 
     xss.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/reflected-xss')
-    xss.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="{'*'}")
+    xss.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="*")
     xss.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/xss.txt')
     xss.add_argument('-e', '--encode', nargs='?', type=str, choices=('normal', 'base64'), help='Encoding scheme to use, select normal for no encoding', default='normal')
 
@@ -38,7 +38,7 @@ def args():
     cmdi.add_argument('-e', '--encode', nargs='?', type=str, choices=('normal', 'base64'), help='Encoding scheme to use, select normal for no encoding', default='normal')
 
     lfi.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/file-inclusion')
-    lfi.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="{'*'}")
+    lfi.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="*")
     lfi.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/lfi.txt')
     lfi.add_argument('-e', '--encode', nargs='?', type=str, choices=('normal', 'base64'), help='Encoding scheme to use, select normal for no encoding', default='normal')
 
@@ -68,13 +68,13 @@ def b64(payload):
 def xss(target, payload, exampleRequest, encode):
     print(f"{GREEN}[+]{RESET} xss selected! Commencing XSS attack...")
     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
-    with open (payload, 'r') as payload_file:
+    with open(payload, 'r') as payload_file:
         payloads = payload_file.readlines()
     for line in payloads:
         line = line.replace('\n', '')
         newRequest = exampleRequest.replace('*', line)
-        w.InteractWithWsSite(target, newRequest)
-    print('xss')
+        response = w.InteractWithWsSite(target, newRequest)
+        print("response: %s\n" % response)
     
 
 
@@ -87,8 +87,8 @@ def lfi(target, payload, exampleRequest, encode):
     for line in payloads:
         line = line.replace('\n', '')
         newRequest = exampleRequest.replace('*', line)
-        w.InteractWithWsSite(target, newRequest)
-    print('lfi')
+        response = w.InteractWithWsSite(target, newRequest)
+        print("response: %s\n" % response)
 
 
 
@@ -116,8 +116,8 @@ def cmdi(target, payload, exampleRequest, encode):
     for line in payloads:
         line = line.replace('\n', '')
         newRequest = exampleRequest.replace('*', line)
-        w.InteractWithWsSite(target, newRequest)
-    print('cmd injection')
+        response = w.InteractWithWsSite(target, newRequest)
+        print("response: %s\n" % response)
 
 
 
