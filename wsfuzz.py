@@ -117,8 +117,14 @@ def cmdi(target, payload, exampleRequest, encode):
         line = line.replace('\n', '')
         newRequest = exampleRequest.replace('*', line)
         response = w.InteractWithWsSite(target, newRequest)
+        if 'neewashere' in response:
+            print(f"{GREEN}[+]{RESET} Command injection successful!")
+            print(f"{GREEN}[+]{RESET} Command output: {response}")
+            print(f"{GREEN}[+]{RESET} Command: {line}")
+        else:
+            print(f"{RED}[-]{RESET} Command injection failed!")
+            print(f"{RED}[-]{RESET} Command: {line}")
         print("response: %s\n" % response)
-
 
 
 def main():
