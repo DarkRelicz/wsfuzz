@@ -33,7 +33,7 @@ def args():
     sqli.add_argument('-e', '--encode', nargs='?', type=str, choices=('normal', 'base64'), help='Encoding scheme to use, select normal for no encoding', default='base64')
 
     cmdi.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/command-execution')
-    cmdi.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="{'*'}")
+    cmdi.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="*")
     cmdi.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/cmdi.txt')
     cmdi.add_argument('-e', '--encode', nargs='?', type=str, choices=('normal', 'base64'), help='Encoding scheme to use, select normal for no encoding', default='normal')
 
