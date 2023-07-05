@@ -125,6 +125,8 @@ def cmdi(target, payload, exampleRequest, encode):
             print(f"{RED}[-]{RESET} Command injection failed!")
             print(f"{RED}[-]{RESET} Command: {line}")
         print("response: %s\n" % response)
+#usage
+#python wsfuzz.py cmdi -t ws://dvws.local:8080/command-execution -r "127.0.0.1*" -p payloads/cmdi2.txt -e normal
 
 
 def main():
