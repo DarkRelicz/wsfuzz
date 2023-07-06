@@ -28,9 +28,9 @@ def args():
     xss.add_argument('-e', '--encode', nargs='?', type=str, choices=('normal', 'base64'), help='Encoding scheme to use, select normal for no encoding', default='normal')
 
     sqli.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/authenticate-user-blind')
-    sqli.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default='{"auth_user":"*","auth_pass":""}')
+    sqli.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default='*')
     sqli.add_argument('-p', '--payload', nargs='?', type=str, help='Payload file to use', default='payloads/sqli.txt')
-    sqli.add_argument('-e', '--encode', nargs='?', type=str, choices=('normal', 'base64'), help='Encoding scheme to use, select normal for no encoding', default='base64')
+    sqli.add_argument('-e', '--encode', nargs='?', type=str, choices=('normal', 'base64'), help='Encoding scheme to use, select normal for no encoding', default='normal')
 
     cmdi.add_argument('-t', '--target', nargs='?', type=str, help='Target Websocket URL', default='ws://dvws.local:8080/command-execution')
     cmdi.add_argument('-r', '--request', nargs='?', type=str, help="Format of an example request, e.g. {'auth_user'':'*','auth_pass':'*'}", default="*")
@@ -104,7 +104,8 @@ def sqli(target, payload, exampleRequest, encode):
         newRequest = exampleRequest.replace('*', encoding(encode, line))
         response = w.InteractWithWsSite(target, newRequest)
         print("response: %s\n" % response)
-    
+# usage
+# python wsfuzz.py sqli -r '{"auth_user":"*","auth_pass":""}' -p payloads/custom_sqli.txt -e base64    
 
 
 # conduct command injection attack
@@ -152,3 +153,6 @@ if __name__ == '__main__':
         main()
     except KeyboardInterrupt:
         print(f"{RED}[-]{RESET} User initiated termination, exiting...")
+    except ConnectionRefusedError:
+        print(f"{RED}[-]{RESET} Error connecting to target websocket, exiting...")
+        exit(0)
