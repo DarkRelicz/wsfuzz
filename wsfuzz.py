@@ -81,11 +81,9 @@ def lfi(target, payload, exampleRequest, encode):
         response = w.InteractWithWsSite(target, newRequest)
         if response != '' and response != ' ':
             print(f"{GREEN}[+]{RESET} Local file inclusion successful!")
-            print(f"{GREEN}[+]{RESET} Payload: %s" % line)
-            print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
+            print("response: %s\n" % response)
         else:
-            print(f"{RED}[-]{RESET} Local file inclusion failed!")
-            print(f"{RED}[-]{RESET} Payload: %s\n" % line)
+            print(f"{RED}[-]{RESET} Local file inclusion failed!\n")
 
 
 
@@ -98,16 +96,15 @@ def sqli(target, payload, exampleRequest, encode):
         payloads = payload_file.readlines()
     for line in payloads:
         line = line.replace('\n', '')
+        print("payload: %s" % line)
         newRequest = exampleRequest.replace('*', encoding(encode, line))
         response = w.InteractWithWsSite(target, newRequest)
         # chk_match = [x for x in error_list if x in response.casefold()]
         if any([x in response.casefold() for x in error_list]) or response == ' ':
-            print(f"{RED}[-]{RESET} SQL injection failed!")
-            print(f"{RED}[-]{RESET} Payload: %s\n" % line)
+            print(f"{RED}[-]{RESET} SQL injection failed!\n")
         else:
             print(f"{GREEN}[+]{RESET} SQL injection successful!")
-            print(f"{GREEN}[+]{RESET} Payload: %s" % line)
-            print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
+            print("response: %s\n" % response)
 # usage
 # python wsfuzz.py sqli -r '{"auth_user":"*","auth_pass":""}' -p payloads/custom_sqli.txt -e base64    
 
@@ -122,7 +119,7 @@ def cmdi(target, payload, exampleRequest, encode):
         line = line.replace('\n', '')
         newRequest = exampleRequest.replace('*', line)
         response = w.InteractWithWsSite(target, newRequest)
-        if 'wsfuzz' in response:
+        if 'neewashere' in response:
             print(f"{GREEN}[+]{RESET} Command injection successful!")
             print(f"{GREEN}[+]{RESET} Command output: {response}")
             print(f"{GREEN}[+]{RESET} Command: {line}")
