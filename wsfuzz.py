@@ -79,7 +79,11 @@ def lfi(target, payload, exampleRequest, encode):
         line = line.replace('\n', '')
         newRequest = exampleRequest.replace('*', line)
         response = w.InteractWithWsSite(target, newRequest)
-        print("response: %s\n" % response)
+        if response != '' and response != ' ':
+            print(f"{GREEN}[+]{RESET} Local file inclusion successful!")
+            print("response: %s\n" % response)
+        else:
+            print(f"{RED}[-]{RESET} Local file inclusion failed!\n")
 
 
 
