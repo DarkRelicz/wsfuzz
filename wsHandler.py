@@ -1,7 +1,9 @@
 import websocket
 
 def InteractWithWsSite(url, message):
+    websocket.setdefaulttimeout(10)
     ws = websocket.create_connection(url)
+    
 
     # Send the message to the WebSocket server
     ws.send(message)
@@ -10,9 +12,13 @@ def InteractWithWsSite(url, message):
     # Receive and process the response from the WebSocket server in chunks
     response = ''
     while True:
-        chunk = ws.recv()
-        response += chunk
-        if len(chunk) < 4096:  # Adjust the chunk size as needed
+        try:
+            chunk = ws.recv()
+            response += chunk
+            if len(chunk) < 4096:  # Adjust the chunk size as needed
+                break
+        except websocket.WebSocketTimeoutException:
+            response = "Connection Timed Out"
             break
     
     #print(f"Recieved: {response}")
