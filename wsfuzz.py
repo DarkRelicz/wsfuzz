@@ -1,8 +1,10 @@
 from argparse import ArgumentParser
 import wsHandler as w
-import sys
 import base64
+
+from time import sleep
 from colorama import init, Fore
+from progressbar import progressbar
 
 # coloura initialization
 init()
@@ -11,6 +13,7 @@ RED = Fore.RED
 RESET = Fore.RESET
 
 ERROR_LIST = ["invalid", "could not", "can't", "cannot", "error", "incorrect"]
+KEYWORD = ["wsfuzz"]
 
 
 # retrieves command line arguments entered
@@ -55,101 +58,138 @@ def encoding(encoding_scheme, msg):
         return msg
 
 
+# encode and send payloads to server
+def test_payloads(payload_list, exampleRequest, target, encode, attack_name):
+    for payload in progressbar((payload_list), redirect_stdout=True):
+        line = payload.strip('\n')
+        newRequest = exampleRequest.replace('*', line)
+        response = w.InteractWithWsSite(target, newRequest)
+        if check_response(response) == True:
+            print(f"{GREEN}[+]{RESET} {attack_name} successful!")
+            print(f"{GREEN}[+]{RESET} Payload: %s" % line)
+            print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
+        else:
+            print(f"{RED}[-]{RESET} {attack_name} failed!")
+            print(f"{RED}[-]{RESET} Payload: %s\n" % line)
+            
+def check_response(response):
+  if response == '':
+    return False
+  if response == ' ':
+    return False
+  if any([x in response.casefold() for x in ERROR_LIST]):
+    return False
+  if any([x in response.casefold() for x in KEYWORDS]):
+    return True
 
-# conduct cross site scripting attack
-def xss(target, payload, exampleRequest, encode):
-    print(f"{GREEN}[+]{RESET} xss selected! Commencing XSS attack...")
+# # conduct cross site scripting attack
+# def xss(target, payload, exampleRequest, encode):
+#     print(f"{GREEN}[+]{RESET} xss selected! Commencing XSS attack...")
+#     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
+#     with open(payload, 'r') as payload_file:
+#         payloads = payload_file.readlines()
+#     for line in payloads:
+#         line = line.replace('\n', '')
+#         newRequest = exampleRequest.replace('*', line)
+#         response = w.InteractWithWsSite(target, newRequest)
+#         print("response: %s\n" % response)
+    
+
+
+# # conduct local file inclusion attack
+# def lfi(target, payload, exampleRequest, encode):
+#     print(f"{GREEN}[+]{RESET} lfi selected! Commencing LFI attack...")
+#     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
+#     with open (payload, 'r') as payload_file:
+#         payloads = payload_file.readlines()
+#     for line in payloads:
+#         line = line.replace('\n', '')
+#         newRequest = exampleRequest.replace('*', line)
+#         response = w.InteractWithWsSite(target, newRequest)
+#         if (response != '' and response != ' ') or any([x in response.casefold() for x in ERROR_LIST]):
+#             print(f"{GREEN}[+]{RESET} Local file inclusion successful!")
+#             print(f"{GREEN}[+]{RESET} Payload: %s" % line)
+#             print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
+#         else:
+#             print(f"{RED}[-]{RESET} Local file inclusion failed!")
+#             print(f"{RED}[-]{RESET} Payload: %s\n" % line)
+
+
+
+# # conduct sql injection attack
+# def sqli(target, payload, exampleRequest, encode):
+    
+#     print(f"{GREEN}[+]{RESET} sqli selected! Commencing SQLi attack...")
+#     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
+#     with open (payload, 'r') as payload_file:
+#         payloads = payload_file.readlines()
+#     for line in payloads:
+#         line = line.replace('\n', '')
+#         newRequest = exampleRequest.replace('*', encoding(encode, line))
+#         print("request: %s\n" % newRequest)
+#         response = w.InteractWithWsSite(target, newRequest)
+#         print("response: %s\n" % response)
+#         if response != ' ':
+#         # chk_match = [x for x in error_list if x in response.casefold()]
+#         if any([x in response.casefold() for x in ERROR_LIST]) or response == ' ':
+#             print(f"{RED}[-]{RESET} SQL injection failed!")
+#             print(f"{RED}[-]{RESET} Payload: %s\n" % line)
+#         else:
+#             print(f"{GREEN}[+]{RESET} SQL injection successful!")
+#             print(f"{GREEN}[+]{RESET} Payload: %s" % line)
+#             print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
+# # usage
+# # python wsfuzz.py sqli -r '{"auth_user":"*","auth_pass":""}' -p payloads/custom_sqli.txt -e base64    
+
+
+# # conduct command injection attack
+# def cmdi(target, payload, exampleRequest, encode):
+#     print(f"{GREEN}[+]{RESET} cmdi selected! Commencing command injection attack...")
+#     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
+#     with open (payload, 'r') as payload_file:
+#         payloads = payload_file.readlines()
+#     for line in payloads:
+#         line = line.replace('\n', '')
+#         newRequest = exampleRequest.replace('*', line)
+#         response = w.InteractWithWsSite(target, newRequest)
+#         if 'wsfuzz' in response:
+#             print(f"{GREEN}[+]{RESET} Command injection successful!")
+#             print(f"{GREEN}[+]{RESET} Command output: {response}")
+#             print(f"{GREEN}[+]{RESET} Command: {line}")
+#         else:
+#             print(f"{RED}[-]{RESET} Command injection failed!")
+#             print(f"{RED}[-]{RESET} Command: {line}")
+#         print("response: %s\n" % response)
+#         sleep(0.001)
+
+def execute_attack(target, payload, example_request, encode, attack_name):
+    print(f"{GREEN}[+]{RESET} {attack_name} selected! Commencing {attack_name} attack...")
     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
     with open(payload, 'r') as payload_file:
-        payloads = payload_file.readlines()
-    for line in payloads:
-        line = line.replace('\n', '')
-        newRequest = exampleRequest.replace('*', line)
-        response = w.InteractWithWsSite(target, newRequest)
-        print("response: %s\n" % response)
+        payload_list = payload_file.readlines()
+    test_payloads(payload_list, example_request, target, encode, attack_name)
     
-
-
-# conduct local file inclusion attack
-def lfi(target, payload, exampleRequest, encode):
-    print(f"{GREEN}[+]{RESET} lfi selected! Commencing LFI attack...")
-    print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
-    with open (payload, 'r') as payload_file:
-        payloads = payload_file.readlines()
-    for line in payloads:
-        line = line.replace('\n', '')
-        newRequest = exampleRequest.replace('*', line)
-        response = w.InteractWithWsSite(target, newRequest)
-        if (response != '' and response != ' ') or any([x in response.casefold() for x in ERROR_LIST]):
-            print(f"{GREEN}[+]{RESET} Local file inclusion successful!")
-            print(f"{GREEN}[+]{RESET} Payload: %s" % line)
-            print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
-        else:
-            print(f"{RED}[-]{RESET} Local file inclusion failed!")
-            print(f"{RED}[-]{RESET} Payload: %s\n" % line)
-
-
-
-# conduct sql injection attack
-def sqli(target, payload, exampleRequest, encode):
-    
-    print(f"{GREEN}[+]{RESET} sqli selected! Commencing SQLi attack...")
-    print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
-    with open (payload, 'r') as payload_file:
-        payloads = payload_file.readlines()
-    for line in payloads:
-        line = line.replace('\n', '')
-        newRequest = exampleRequest.replace('*', encoding(encode, line))
-        response = w.InteractWithWsSite(target, newRequest)
-        # chk_match = [x for x in error_list if x in response.casefold()]
-        if any([x in response.casefold() for x in ERROR_LIST]) or response == ' ':
-            print(f"{RED}[-]{RESET} SQL injection failed!")
-            print(f"{RED}[-]{RESET} Payload: %s\n" % line)
-        else:
-            print(f"{GREEN}[+]{RESET} SQL injection successful!")
-            print(f"{GREEN}[+]{RESET} Payload: %s" % line)
-            print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
 # usage
-# python wsfuzz.py sqli -r '{"auth_user":"*","auth_pass":""}' -p payloads/custom_sqli.txt -e base64    
-
-
-# conduct command injection attack
-def cmdi(target, payload, exampleRequest, encode):
-    print(f"{GREEN}[+]{RESET} cmdi selected! Commencing command injection attack...")
-    print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
-    with open (payload, 'r') as payload_file:
-        payloads = payload_file.readlines()
-    for line in payloads:
-        line = line.replace('\n', '')
-        newRequest = exampleRequest.replace('*', line)
-        response = w.InteractWithWsSite(target, newRequest)
-        if 'wsfuzz' in response:
-            print(f"{GREEN}[+]{RESET} Command injection successful!")
-            print(f"{GREEN}[+]{RESET} Command output: {response}")
-            print(f"{GREEN}[+]{RESET} Command: {line}")
-        else:
-            print(f"{RED}[-]{RESET} Command injection failed!")
-            print(f"{RED}[-]{RESET} Command: {line}")
-        print("response: %s\n" % response)
-#usage
-#python wsfuzz.py cmdi -t ws://dvws.local:8080/command-execution -r "127.0.0.1*" -p payloads/cmdi2.txt -e normal
-
+# python wsfuzz.py sqli -r '{"auth_user":"*","auth_pass":""}' -p payloads/custom_sqli.txt -e base64
+# python wsfuzz.py cmdi -t ws://dvws.local:8080/command-execution -r "127.0.0.1*" -p payloads/cmdi2.txt -e normal    
 
 def main():
     arg = args()
 
-    if arg.target[0:5] != "ws://" and arg.target[0:6] != "wss://":
-        print(f"{RED}[-]{RESET} Please enter a valid websocket url")
+    if not arg.target.startswith(("ws://", "wss://")):
+        print(f"{RED}[-]{RESET} Please enter a valid WebSocket URL")
         exit(0)
-
-    if arg.attack == 'xss':
-        xss(arg.target, arg.payload, arg.request, arg.encode)
-    if arg.attack == 'lfi':
-        lfi(arg.target, arg.payload, arg.request, arg.encode)
-    if arg.attack == 'sqli':
-        sqli(arg.target, arg.payload, arg.request, arg.encode)
-    if arg.attack == 'cmdi':
-        cmdi(arg.target, arg.payload, arg.request, arg.encode)
+        
+    attacks = {
+        'xss': 'XSS',
+        'lfi': 'LFI',
+        'sqli': 'SQLi',
+        'cmdi': 'command injection'
+    }
+    
+    attack_name = attacks.get(arg.attack)
+    if attack_name:
+        execute_attack(arg.target, arg.payload, arg.request, arg.encode, attack_name)
 
 
 
