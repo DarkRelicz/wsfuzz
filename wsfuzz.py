@@ -1,5 +1,6 @@
 import base64
 from argparse import ArgumentParser
+import urllib
 
 from colorama import init, Fore
 from progressbar import progressbar
