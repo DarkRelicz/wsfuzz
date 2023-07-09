@@ -1,28 +1,32 @@
 import websocket
 
-def InteractWithWsSite(url, message):
+# open WebSocket connection
+def openWsConn(url):
     websocket.setdefaulttimeout(10)
     ws = websocket.create_connection(url)
-    
+    return ws
 
-    # Send the message to the WebSocket server
-    ws.send(message)
-    # print(f"Sent: {message}")
+# close WebSocket connection
+def closeWsConn(ws):
+    ws.close()
 
-    # Receive and process the response from the WebSocket server in chunks
-    response = ''
-    while True:
-        try:
+# send requests to target WebSocket server
+def InteractWithWsSite(ws, message, url):  
+    try: 
+        # Send the message to the WebSocket server
+        ws.send(message)
+
+        # Receive and process the response from the WebSocket server in chunks
+        response = ''
+        while True:
             chunk = ws.recv()
             response += chunk
             if len(chunk) < 4096:  # Adjust the chunk size as needed
                 break
-        except websocket.WebSocketTimeoutException:
-            response = "Connection Timed Out"
-            break
+    # reopens the websocket connection and move on the the next payload
+    except websocket.WebSocketTimeoutException:
+        openWsConn(url)
     
-    #print(f"Recieved: {response}")
-    ws.close()
     return response
 
 

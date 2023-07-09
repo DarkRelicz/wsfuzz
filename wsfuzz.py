@@ -13,7 +13,7 @@ GREEN = Fore.GREEN
 RED = Fore.RED
 RESET = Fore.RESET
 
-ERROR_LIST = ["invalid", "could not", "can't", "cannot", "error", "incorrect, 'Connection Timed Out'"]
+ERROR_LIST = ["invalid", "could not", "can't", "cannot", "error", "incorrect", "connection timed out"]
 KEYWORDS = ["wsfuzz"]
 
 
@@ -53,11 +53,11 @@ def encoding(encoding_scheme, msg):
 
 
 # Encode and send payloads to server
-def test_payloads(payload_list, exampleRequest, target, encode, attack_name):
+def test_payloads(payload_list, exampleRequest, ws_conn, encode, attack_name, target):
     for payload in progressbar((payload_list), redirect_stdout=True):
         line = payload.strip('\n')
         newRequest = exampleRequest.replace('*', encoding(encode,line))
-        response = w.InteractWithWsSite(target, newRequest)
+        response = w.InteractWithWsSite(ws_conn, newRequest, target)
         global PAYLOAD 
         PAYLOAD = line
         if check_response(response):
@@ -89,7 +89,9 @@ def execute_attack(target, payload, example_request, encode, attack_name):
     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
     with open(payload, 'r',encoding="utf-8") as payload_file:
         payload_list = payload_file.readlines()
-    test_payloads(payload_list, example_request, target, encode, attack_name)
+    ws_conn = w.openWsConn(target)
+    test_payloads(payload_list, example_request, ws_conn, encode, attack_name, target)
+    w.closeWsConn(ws_conn)
     
 # usage (full)
 # python wsfuzz.py {attack_name} -t {target_url} -r {payload_example_string} -p {payload_list} -e {encoding_method}
