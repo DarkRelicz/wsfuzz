@@ -1,10 +1,10 @@
-from argparse import ArgumentParser
-import wsHandler as w
 import base64
+from argparse import ArgumentParser
 
-from time import sleep
 from colorama import init, Fore
 from progressbar import progressbar
+
+import wsHandler as w
 
 # coloura initialization
 init()
@@ -12,8 +12,8 @@ GREEN = Fore.GREEN
 RED = Fore.RED
 RESET = Fore.RESET
 
-ERROR_LIST = ["invalid", "could not", "can't", "cannot", "error", "incorrect"]
-KEYWORD = ["wsfuzz"]
+ERROR_LIST = ["invalid", "could not", "can't", "cannot", "error", "incorrect, 'Connection Timed Out'"]
+KEYWORDS = ["wsfuzz"]
 
 
 # retrieves command line arguments entered
@@ -62,9 +62,12 @@ def encoding(encoding_scheme, msg):
 def test_payloads(payload_list, exampleRequest, target, encode, attack_name):
     for payload in progressbar((payload_list), redirect_stdout=True):
         line = payload.strip('\n')
-        newRequest = exampleRequest.replace('*', line)
+        newRequest = exampleRequest.replace('*', encoding(encode,line))
         response = w.InteractWithWsSite(target, newRequest)
-        if check_response(response) == True:
+        global PAYLOAD 
+        PAYLOAD = line
+        # print(response)
+        if check_response(response):
             print(f"{GREEN}[+]{RESET} {attack_name} successful!")
             print(f"{GREEN}[+]{RESET} Payload: %s" % line)
             print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
@@ -73,13 +76,16 @@ def test_payloads(payload_list, exampleRequest, target, encode, attack_name):
             print(f"{RED}[-]{RESET} Payload: %s\n" % line)
             
 def check_response(response):
-  if response == '':
-    return False
-  if response == ' ':
-    return False
-  if any([x in response.casefold() for x in ERROR_LIST]):
-    return False
-  if any([x in response.casefold() for x in KEYWORDS]):
+    if response == '':
+        return False
+    if response == ' ':
+        return False
+    if PAYLOAD in response:
+        return True
+    if any([x in response.casefold() for x in ERROR_LIST]):
+        return False
+    if any([x in response.casefold() for x in KEYWORDS]):
+        return True
     return True
 
 # # conduct cross site scripting attack
@@ -165,7 +171,7 @@ def check_response(response):
 def execute_attack(target, payload, example_request, encode, attack_name):
     print(f"{GREEN}[+]{RESET} {attack_name} selected! Commencing {attack_name} attack...")
     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
-    with open(payload, 'r') as payload_file:
+    with open(payload, 'r',encoding="utf-8") as payload_file:
         payload_list = payload_file.readlines()
     test_payloads(payload_list, example_request, target, encode, attack_name)
     
