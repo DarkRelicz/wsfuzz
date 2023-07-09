@@ -69,10 +69,12 @@ Note: Replace the `{attack_name}`, `{target_url}`, and other parameters with the
 
 wsfuzz performs checks on the response received from the server to determine the success or failure of an attack. The following criteria are evaluated:
 
-- If the response is empty or contains only whitespace, it's considered a failure.
 - If the payload is found in the response, it's considered a success.
-- If any error-related keywords are found in the response, it's considered a failure.
+-- test
 - If any predefined keywords are found in the response, it's considered a success.
+- If the response is empty or contains only whitespace, it's considered a failure.
+- If any error-related keywords are found in the response, it's considered a failure.
+
 
 ## Exiting
 
