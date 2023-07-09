@@ -6,6 +6,7 @@ from colorama import init, Fore
 from progressbar import progressbar
 
 import wsHandler as w
+import banner
 
 # Colours initialization
 init()
@@ -53,11 +54,11 @@ def encoding(encoding_scheme, msg):
 
 
 # Encode and send payloads to server
-def test_payloads(payload_list, exampleRequest, ws_conn, encode, attack_name, target):
+def test_payloads(payload_list, exampleRequest, ws_conn, encode, attack_name):
     for payload in progressbar((payload_list), redirect_stdout=True):
         line = payload.strip('\n')
         newRequest = exampleRequest.replace('*', encoding(encode,line))
-        response = w.InteractWithWsSite(ws_conn, newRequest, target)
+        response = w.InteractWithWsSite(ws_conn, newRequest)
         global PAYLOAD 
         PAYLOAD = line
         if check_response(response):
@@ -89,9 +90,11 @@ def execute_attack(target, payload, example_request, encode, attack_name):
     print(f"{GREEN}[+]{RESET} {encode} encoding scheme detected!")
     with open(payload, 'r',encoding="utf-8") as payload_file:
         payload_list = payload_file.readlines()
-    ws_conn = w.openWsConn(target)
-    test_payloads(payload_list, example_request, ws_conn, encode, attack_name, target)
-    w.closeWsConn(ws_conn)
+    ws_connection = w.initWsConn(target)
+    test_payloads(payload_list, example_request, ws_connection, encode, attack_name)
+    
+    # Close web socket connection after testing payloads
+    ws_connection.close()
     
 # usage (full)
 # python wsfuzz.py {attack_name} -t {target_url} -r {payload_example_string} -p {payload_list} -e {encoding_method}
@@ -105,7 +108,7 @@ def execute_attack(target, payload, example_request, encode, attack_name):
 
 def main():
     arg = args()
-
+    banner.init_banner()
     if not arg.target.startswith(("ws://", "wss://")):
         print(f"{RED}[-]{RESET} Please enter a valid WebSocket URL")
         exit(0)

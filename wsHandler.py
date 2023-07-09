@@ -1,20 +1,17 @@
 import websocket
 
 # open WebSocket connection
-def openWsConn(url):
-    websocket.setdefaulttimeout(10)
-    ws = websocket.create_connection(url)
+def initWsConn(url):
+    ws = websocket.create_connection(url,timeout=3)
     return ws
 
-# close WebSocket connection
-def closeWsConn(ws):
-    ws.close()
-
 # send requests to target WebSocket server
-def InteractWithWsSite(ws, message, url):  
+def InteractWithWsSite(ws, message):
+    new_ws = ws
     try: 
         # Send the message to the WebSocket server
-        ws.send(message)
+        
+        new_ws.send(message)
 
         # Receive and process the response from the WebSocket server in chunks
         response = ''
@@ -25,8 +22,7 @@ def InteractWithWsSite(ws, message, url):
                 break
     # reopens the websocket connection and move on the the next payload
     except websocket.WebSocketTimeoutException:
-        openWsConn(url)
-    
+        response = "Connection Timed Out"
     return response
 
 
@@ -35,7 +31,7 @@ def main():
     # Example usage
     websocket_url = 'ws://dvws.local:8080/authenticate-user'  # Replace with the actual WebSocket URL
     message_to_send = '{"auth_user":"Jw==","auth_pass":"Jw=="}'  # Replace with the message you want to send
-    InteractWithWsSite(websocket_url, message_to_send)
+    InteractWithWsSite(initWsConn(websocket_url), message_to_send)
 
 #__main__ functiuon
 if __name__ == "__main__":
