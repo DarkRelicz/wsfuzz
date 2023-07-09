@@ -70,7 +70,6 @@ Note: Replace the `{attack_name}`, `{target_url}`, and other parameters with the
 wsfuzz performs checks on the response received from the server to determine the success or failure of an attack. The following criteria are evaluated:
 
 - If the payload is found in the response, it's considered a success.
--- test
 - If any predefined keywords are found in the response, it's considered a success.
 - If the response is empty or contains only whitespace, it's considered a failure.
 - If any error-related keywords are found in the response, it's considered a failure.
@@ -78,7 +77,7 @@ wsfuzz performs checks on the response received from the server to determine the
 
 ## Exiting
 
-To terminate the execution of wsfuzz, press `Ctrl+C`. This will trigger a KeyboardInterrupt, and the program will exit gracefully.
+To terminate the execution of wsfuzz, press `Ctrl+C`. This will trigger a KeyboardInterrupt, and the program will exit gracefully. Otherwise, wsfuzz will exit at the end of its execution.
 
 ## Contributions
 
