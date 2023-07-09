@@ -1,5 +1,5 @@
-;echo neewashere
-||echo neewashere
-|echo neewashere
-`echo neewashere
-,echo neewashere
+;echo wsfuzz
+||echo wsfuzz
+|echo wsfuzz
+`echo wsfuzz
+,echo wsfuzz
