@@ -7,11 +7,11 @@ def initWsConn(url):
 
 # send requests to target WebSocket server
 def InteractWithWsSite(ws, message):
-    new_ws = ws
+    
     try: 
         # Send the message to the WebSocket server
         
-        new_ws.send(message)
+        ws.send(message)
 
         # Receive and process the response from the WebSocket server in chunks
         response = ''
