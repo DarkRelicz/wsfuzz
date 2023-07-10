@@ -1,88 +1,53 @@
-# Web Socket Fuzzer (wsfuzz)
+WebSocket Fuzzer
+WebSocket Fuzzer is a Python script that enables you to perform various types of attacks, such as XSS, SQL injection, command injection, and file inclusion, on WebSocket-based web applications. The script allows you to customize the target URL, payload, encoding scheme, and other parameters.
 
-wsfuzz is a command-line tool written in Python for carrying out various types of attacks, such as XSS, SQLi, LFI, and command injection, on WebSocket endpoints. It allows users to specify the target WebSocket URL, the payload to use, and the encoding scheme for the payloads.
+Installation
+Clone the repository or download the wsfuzz.py script.
+Install the required dependencies by running the following command:
+shell
+Copy code
+pip install -r requirements.txt
+Usage
+The script can be executed using the following command:
 
-## Prerequisites
+shell
+Copy code
+python wsfuzz.py <attack> [options]
+Replace <attack> with the type of attack you want to carry out (xss, sqli, cmdi, or lfi).
 
-- Python 3.x
-- Dependencies: `base64`, `argparse`, `urllib`, `colorama`, `progressbar`
+Attack Options
+The available options depend on the attack type. Here are the common options:
 
-## Installation
+-t, --target: Specify the target WebSocket URL. Default values are provided for each attack, but you can customize it as needed.
+-r, --request: Specify the format of an example request. Use curly braces {} to represent dynamic parts that will be replaced by payloads. Default values are provided for each attack, but you can customize it as needed.
+-p, --payload: Specify the payload file to use. Default payload files are provided for each attack, but you can provide your own.
+-e, --encode: Specify the encoding scheme to use for payloads. Choose from none, base64, hex, or url. Default is none.
+Examples
+Here are some examples of how to use the script:
 
-1. Clone the wsfuzz repository:
+XSS attack:
+shell
+Copy code
+python wsfuzz.py xss -t ws://example.com/xss -r "*" -p payloads/xss.txt -e none
+SQL injection attack:
+shell
+Copy code
+python wsfuzz.py sqli -t ws://example.com/authenticate-user -r '{"auth_user":"*","auth_pass":""}' -p payloads/sqli.txt -e base64
+Command injection attack:
+shell
+Copy code
+python wsfuzz.py cmdi -t ws://example.com/command-execution -r "127.0.0.1*" -p payloads/cmdi.txt -e none
+File inclusion attack:
+shell
+Copy code
+python wsfuzz.py lfi -t ws://example.com/file-inclusion -r "*" -p payloads/lfi.txt -e none
+Customization
+You can customize the target URL and payloads by modifying the default values provided in the script. Refer to the respective attack sections in the script to make the necessary changes.
 
-```shell
-$ git clone https://github.com/username/wsfuzz.git
-$ cd wsfuzz
-```
+Credits
+This script utilizes the wsHandler module for WebSocket communication and the progressbar module for progress visualization.
 
-2. Install the required dependencies using pip:
+Disclaimer
+Use this script responsibly and only on web applications for which you have proper authorization. The author and the OpenAI organization are not responsible for any misuse or illegal activities performed with this script.
 
-```shell
-$ pip install -r requirements.txt
-```
-
-## Usage
-
-The general syntax to run wsfuzz is as follows:
-
-```shell
-$ python wsfuzz.py {attack_name} -t {target_url} -r {payload_example_string} -p {payload_file} -e {encoding_method}
-```
-
-Here's an example of running different attacks:
-
-- XSS attack:
-
-```shell
-$ python wsfuzz.py xss -t ws://example.com/reflected-xss -r "*" -p payloads/xss.txt -e normal
-```
-
-- SQLi attack:
-
-```shell
-$ python wsfuzz.py sqli -t ws://example.com/authenticate-user -r '{"auth_user":"*","auth_pass":""}' -p payloads/custom_sqli.txt -e base64
-```
-
-- Command injection attack:
-
-```shell
-$ python wsfuzz.py cmdi -t ws://example.com/command-execution -r "127.0.0.1*" -p payloads/cmdi.txt -e normal
-```
-
-- LFI attack:
-
-```shell
-$ python wsfuzz.py lfi -t ws://example.com/file-inclusion -r "*" -p payloads/lfi.txt -e normal
-```
-
-Note: Replace the `{attack_name}`, `{target_url}`, and other parameters with the appropriate values.
-
-## Command-line Arguments
-
-- `-t`, `--target`: Specifies the target WebSocket URL.
-- `-r`, `--request`: Specifies the format of an example request, e.g., `{'auth_user':'*','auth_pass':'*'}`.
-- `-p`, `--payload`: Specifies the payload file to use.
-- `-e`, `--encode`: Specifies the encoding scheme to use. Available options are `none`, `base64`, `hex`, and `url`.
-
-## Response Analysis
-
-wsfuzz performs checks on the response received from the server to determine the success or failure of an attack. The following criteria are evaluated:
-
-- If the payload is found in the response, it's considered a success.
-- If any predefined keywords are found in the response, it's considered a success.
-- If the response is empty or contains only whitespace, it's considered a failure.
-- If any error-related keywords are found in the response, it's considered a failure.
-
-
-## Exiting
-
-To terminate the execution of wsfuzz, press `Ctrl+C`. This will trigger a KeyboardInterrupt, and the program will exit gracefully. Otherwise, wsfuzz will exit at the end of its execution.
-
-## Contributions
-
-Contributions to wsfuzz are welcome! If you find any issues or have suggestions for improvements, please feel free to create a pull request or submit an issue on the [GitHub repository](https://github.com/username/wsfuzz).
-
-## License
-
-wsfuzz is licensed under the [MIT License](https://opensource.org/licenses/MIT). See the [LICENSE](LICENSE) file for more details.
+If you encounter any issues or have suggestions for improvement, please feel free to open an issue or submit a pull request on the GitHub repository.
