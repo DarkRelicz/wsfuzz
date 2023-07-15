@@ -55,19 +55,29 @@ def encoding(encoding_scheme, msg):
 
 # Encode and send payloads to server
 def test_payloads(payload_list, exampleRequest, ws_conn, encode, attack_name):
+    categories = []
     for payload in progressbar((payload_list), redirect_stdout=True):
         line = payload.strip('\n')
-        newRequest = exampleRequest.replace('*', encoding(encode,line))
-        response = w.InteractWithWsSite(ws_conn, newRequest)
-        global PAYLOAD 
-        PAYLOAD = line
-        if check_response(response):
-            print(f"{GREEN}[+]{RESET} {attack_name} successful!")
-            print(f"{GREEN}[+]{RESET} Payload: %s" % line)
-            print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
+        if line.startswith('// '):
+            line = line.strip('// ')
+            categories.append([line,0])
+            print(f"[EXECUTING {categories[-1][0]} PAYLOADS]\n")
         else:
-            print(f"{RED}[-]{RESET} {attack_name} failed!")
-            print(f"{RED}[-]{RESET} Payload: %s\n" % line)
+            newRequest = exampleRequest.replace('*', encoding(encode,line))
+            response = w.InteractWithWsSite(ws_conn, newRequest)
+            global PAYLOAD 
+            PAYLOAD = line
+            if check_response(response):
+                if categories == []:
+                    categories.append(["GENERIC", 0])
+                categories[-1][1] = 1
+                print(f"{GREEN}[+]{RESET} {attack_name} successful!")
+                print(f"{GREEN}[+]{RESET} Payload: %s" % line)
+                print(f"{GREEN}[+]{RESET} Response: %s\n" % response)
+            else:
+                print(f"{RED}[-]{RESET} {attack_name} failed!")
+                print(f"{RED}[-]{RESET} Payload: %s\n" % line)
+    return categories
 
 
 # Different checks to test if response is a valid/successful attack
@@ -91,8 +101,10 @@ def execute_attack(target, payload, example_request, encode, attack_name):
     with open(payload, 'r',encoding="utf-8") as payload_file:
         payload_list = payload_file.readlines()
     ws_connection = w.initWsConn(target)
-    test_payloads(payload_list, example_request, ws_connection, encode, attack_name)
-    
+    summary = test_payloads(payload_list, example_request, ws_connection, encode, attack_name)
+    for category in summary:
+        if category[1]:
+            print(f"{GREEN}[+]{RESET} {category[0]} attack successful")
     # Close web socket connection after testing payloads
     ws_connection.close()
     
