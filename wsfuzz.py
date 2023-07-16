@@ -111,9 +111,9 @@ def execute_attack(target, payload, example_request, encode, attack_name):
 # usage (full)
 # python wsfuzz.py {attack_name} -t {target_url} -r {payload_example_string} -p {payload_list} -e {encoding_method}
 # python wsfuzz.py sqli -t ws://dvws.local:8080/authenticate-user -r '{"auth_user":"*","auth_pass":""}' -p payloads/custom_sqli.txt -e base64
-# python wsfuzz.py cmdi -t ws://dvws.local:8080/command-execution -r "127.0.0.1*" -p payloads/cmdi2.txt -e none
-# python wsfuzz.py lfi -t ws://dvws.local:8080/file-inclusion -r "*" -p payloads/lfi.txt -e none    
-# python wsfuzz.py xss -t ws://dvws.local:8080/reflected-xss -r "*" -p payloads/cmdi2.txt -e none
+# python wsfuzz.py cmdi -t ws://dvws.local:8080/command-execution -r "127.0.0.1*" -p payloads/custom_cmdi.txt -e none
+# python wsfuzz.py lfi -t ws://dvws.local:8080/file-inclusion -r "*" -p payloads/default/lfi.txt -e none    
+# python wsfuzz.py xss -t ws://dvws.local:8080/reflected-xss -r "*" -p payloads/custom_xss.txt -e none
 
 # usage (partial)
 # python wsfuzz.py xss -t ws://dvws.local:8080/file-inclusion -r "*" 
